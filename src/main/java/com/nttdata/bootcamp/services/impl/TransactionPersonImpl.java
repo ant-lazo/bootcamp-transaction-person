@@ -5,6 +5,9 @@ import java.util.function.Function;
 
 import com.nttdata.bootcamp.exceptions.TypeTransactionException;
 import com.nttdata.bootcamp.utils.Constants;
+
+import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
@@ -18,24 +21,26 @@ import com.nttdata.bootcamp.services.ITransactionPersonService;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+@Slf4j
 @Service
 public class TransactionPersonImpl implements ITransactionPersonService{
 	
 	@Autowired
 	ITransactionPersonRepo tprepo;
 	
-	private WebClient customerServiceClient = WebClient.builder()
-		      .baseUrl("http://localhost:8024")
-		      .build();
+	@Autowired
+	private WebClient.Builder webClientBuilder;
 	
-	private Function<Mono<SavingAccount>, Mono<SavingAccount>>
-			updateSavingAccount = (objeto) -> customerServiceClient
+	/*public Function<Mono<SavingAccount>, Mono<SavingAccount>>
+			updateSavingAccount = (objeto) -> webClientBuilder
+			.baseUrl("http://service-product-savingaccount")
+		    .build()
 			.patch()
 			.uri("/savingAccount/update")
 			.body(objeto, SavingAccount.class)
 			.retrieve()
-			.bodyToMono(SavingAccount.class);
-
+			.bodyToMono(SavingAccount.class);*/
+	
 	@Override
 	public Flux<TransactionPerson> findAll() {
 		return tprepo.findAll();
@@ -49,8 +54,9 @@ public class TransactionPersonImpl implements ITransactionPersonService{
 	@Override
 	public Mono<TransactionPerson> save(TransactionPerson transactionPerson){
 
-		Mono<SavingAccount> savingAccount = customerServiceClient.get()
-				.uri("/savingAccount/findById/"+transactionPerson.getIdProduct())
+		Mono<SavingAccount> savingAccount = webClientBuilder
+				.build().get()
+				.uri("http://service-product-savingaccount/savingAccount/findById/"+transactionPerson.getIdProduct())
 				.accept(MediaType.APPLICATION_JSON)
 				.retrieve()
 				.bodyToMono(SavingAccount.class)
@@ -68,24 +74,29 @@ public class TransactionPersonImpl implements ITransactionPersonService{
 					return Mono.just(p);
 				});
 		
-		/*webClientBuilder.build()
-		.patch()
-		.uri("http://service-product-savingaccount/savingAccount/update")
-		.accept(MediaType.APPLICATION_JSON)
-		.body(savingAccount, SavingAccount.class)
-		.retrieve()
-		.bodyToMono(SavingAccount.class);*/
+		Mono<SavingAccount> updateSavingAccount = webClientBuilder
+				.build()
+				.patch()
+				.uri("http://service-product-savingaccount/savingAccount/update")
+				.body(savingAccount, SavingAccount.class)
+				.retrieve()
+				.bodyToMono(SavingAccount.class);
 		
-		//return tprepo.save(transactionPerson);
-		return updateSavingAccount.apply(savingAccount).flatMap(p->{
+		return updateSavingAccount.flatMap(p -> {
 			return tprepo.save(transactionPerson);
-		});
+			});
 		
 	}
 
 	@Override
 	public Mono<Void> delete(TransactionPerson transactionPerson) {
 		return tprepo.delete(transactionPerson);
+	}
+
+	@Override
+	public Flux<TransactionPerson> findByIdCustomerPersonAndProductName(String idCustomerPerson, String productName) {
+		// TODO Auto-generated method stub
+		return tprepo.findByIdCustomerPersonAndProductName(idCustomerPerson,productName);
 	}
 	
 }

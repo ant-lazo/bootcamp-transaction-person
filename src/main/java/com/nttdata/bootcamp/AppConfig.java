@@ -10,7 +10,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 @Configuration
 public class AppConfig {
 
-	@Bean("clientRest")
+	/*@Bean("clientRest")
 	public RestTemplate registrarRestTemplate() {
 		RestTemplate restTemplate = new RestTemplate();
 		HttpComponentsClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory();
@@ -19,13 +19,13 @@ public class AppConfig {
 
 		restTemplate.setRequestFactory(requestFactory);
 		return restTemplate;
-	}
+	}*/
 	
 
-	/*@LoadBalanced
+	@LoadBalanced
 	@Bean
 	public WebClient.Builder loadBalancedWebClientBuilder() {
 		return WebClient.builder();
-	}*/
+	}
 	
 }

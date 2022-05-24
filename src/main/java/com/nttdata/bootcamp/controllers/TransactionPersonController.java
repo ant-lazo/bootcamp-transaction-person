@@ -46,5 +46,10 @@ public class TransactionPersonController {
 	public Mono<Void> delete(@RequestBody TransactionPerson transactionPerson){
 		return tarepo.delete(transactionPerson);
 	}
+	
+	@GetMapping("/findByIdCustomerPersonAndProductName/{idCustomerPerson}/{productName}")
+	public Flux<TransactionPerson> findByIdCustomerPersonAndProductName(@PathVariable String idCustomerPerson, @PathVariable String productName){
+		return tarepo.findByIdCustomerPersonAndProductName(idCustomerPerson, productName);
+	}
 
 }
