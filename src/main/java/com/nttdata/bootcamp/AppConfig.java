@@ -20,8 +20,7 @@ public class AppConfig {
 		restTemplate.setRequestFactory(requestFactory);
 		return restTemplate;
 	}*/
-
-
+	
 	@LoadBalanced
 	@Bean
 	public WebClient.Builder loadBalancedWebClientBuilder() {

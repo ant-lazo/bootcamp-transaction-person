@@ -10,4 +10,5 @@ public interface ITransactionPersonService {
 	public Mono<TransactionPerson> findById(String id);
 	public Mono<TransactionPerson> save(TransactionPerson transactionPerson);
 	public Mono<Void> delete(TransactionPerson transactionPerson);
+	public Flux<TransactionPerson> findByIdCustomerPersonAndProductName(String idCustomerPerson, String productName);
 }
