@@ -10,21 +10,23 @@ import org.springframework.web.reactive.function.client.WebClient;
 @Configuration
 public class AppConfig {
 
-	/*@Bean("clientRest")
-	public RestTemplate registrarRestTemplate() {
-		RestTemplate restTemplate = new RestTemplate();
-		HttpComponentsClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory();
-		requestFactory.setConnectTimeout(2000);
-		requestFactory.setReadTimeout(2000);
+		/*
+		@Bean("clientRest")
+		public RestTemplate registrarRestTemplate() {
+			RestTemplate restTemplate = new RestTemplate();
+			HttpComponentsClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory();
+			requestFactory.setConnectTimeout(2000);
+			requestFactory.setReadTimeout(2000);
 
-		restTemplate.setRequestFactory(requestFactory);
-		return restTemplate;
-	}*/
+			restTemplate.setRequestFactory(requestFactory);
+			return restTemplate;
+		}
+		*/
 	
-	@LoadBalanced
-	@Bean
-	public WebClient.Builder loadBalancedWebClientBuilder() {
-		return WebClient.builder();
-	}
+    @LoadBalanced
+    @Bean
+	  public WebClient.Builder loadBalancedWebClientBuilder() {
+      return WebClient.builder();
+    }
 	
 }

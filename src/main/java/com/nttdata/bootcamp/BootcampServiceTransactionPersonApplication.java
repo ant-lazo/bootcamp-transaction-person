@@ -17,32 +17,31 @@ import reactor.core.publisher.Flux;
 @Slf4j
 @SpringBootApplication
 public class BootcampServiceTransactionPersonApplication implements CommandLineRunner{
-	
-	@Autowired
-	ITransactionPersonRepo terepo;
-	
-	@Autowired
-	ReactiveMongoTemplate mongoTemplate;
+  
+  @Autowired
+  ITransactionPersonRepo terepo;
+  
+  @Autowired
+  ReactiveMongoTemplate mongoTemplate;
 
-	public static void main(String[] args) {
-		SpringApplication.run(BootcampServiceTransactionPersonApplication.class, args);
-	}
+  public static void main(String[] args) {
+    SpringApplication.run(BootcampServiceTransactionPersonApplication.class, args);
+  }
 
-	@Override
-	public void run(String... args) throws Exception {
-		// TODO Auto-generated method stub
-		mongoTemplate.dropCollection("transaction_persons").subscribe();
-		
-		Flux.just(TransactionPerson.builder()
-				.idCustomerPerson("b1")
-				.idProduct("120")
-				.productName("currentAccount")
-				.typeTransaction("paid")
-				.amount("13")
-				.createdAt("19-05-22")
-				.build()).flatMap(bs->{
-						return terepo.save(bs);
-				}).subscribe(s-> log.info("Se ingreso transactionPerson: "+s));
-	}
+  @Override
+  public void run(String... args) throws Exception {
+  mongoTemplate.dropCollection("transaction_persons").subscribe();
+    
+  Flux.just(TransactionPerson.builder()
+    .idCustomerPerson("b1")
+    .idProduct("120")
+    .productName("currentAccount")
+    .typeTransaction("paid")
+    .amount("13")
+    .createdAt("19-05-22")
+    .build()).flatMap(bs->{
+       return terepo.save(bs);
+  }).subscribe(s-> log.info("Se ingreso transactionPerson: "+s));
+}
 
 }

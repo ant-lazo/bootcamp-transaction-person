@@ -63,23 +63,21 @@ public class TransactionPersonImpl implements ITransactionPersonService{
                     }
                     return Mono.just(p);
                 });
-        return savingAccount.flatMap(res -> {
+        
             Mono<SavingAccount> updateSavingAccount = webClientBuilder
                     .baseUrl("http://service-product-savingaccount")
                     .build()
                     .patch()
                     .uri("/savingAccount/update")
                     .accept(MediaType.APPLICATION_JSON)
-                    .body(res, SavingAccount.class)
+                    .body(savingAccount, SavingAccount.class)
                     .retrieve()
                     .bodyToMono(SavingAccount.class);
-            return updateSavingAccount.flatMap(p->{
-                return tprepo.save(transactionPerson);
-            });
-        });     
-        /*return updateSavingAccount.apply(savingAccount).flatMap(p->{
+            
+                
+        return updateSavingAccount.flatMap(p->{
             return tprepo.save(transactionPerson);
-        });*/
+        });
     }
     @Override
     public Mono<Void> delete(TransactionPerson transactionPerson) {
