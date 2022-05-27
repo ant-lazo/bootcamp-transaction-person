@@ -2,8 +2,10 @@ package com.nttdata.bootcamp.models;
 
 import java.util.Date;
 
+import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -23,5 +25,6 @@ public class TransactionPerson {
 	private String productName;
 	private String typeTransaction;
 	private String amount;
-	private String createdAt;
+	@DateTimeFormat(pattern = "dd-MM-yyyy")
+	private Date createdAt;
 }

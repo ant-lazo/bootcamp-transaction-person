@@ -1,5 +1,6 @@
 package com.nttdata.bootcamp.services.impl;
 import java.math.BigDecimal;
+import java.util.Date;
 import java.util.function.Function;
 import com.nttdata.bootcamp.exceptions.TypeTransactionException;
 import com.nttdata.bootcamp.utils.Constants;
@@ -42,7 +43,19 @@ public class TransactionPersonImpl implements ITransactionPersonService{
         return tprepo.findById(id);
     }
     @Override
-    public Mono<TransactionPerson> save(TransactionPerson transactionPerson){
+	public Mono<TransactionPerson> saveCurrentAccount(TransactionPerson transactionPerson) {
+		return null;
+	}
+	@Override
+	public Mono<TransactionPerson> saveFixedTermAccount(TransactionPerson transactionPerson) {
+		return null;
+	}
+	@Override
+	public Mono<TransactionPerson> savePersonalCredit(TransactionPerson transactionPerson) {
+		return null;
+	}
+    @Override
+    public Mono<TransactionPerson> saveSavingAccount(TransactionPerson transactionPerson){
         Mono<SavingAccount> savingAccount = webClientBuilder
                 .baseUrl("http://service-product-savingaccount")
                 .build()
@@ -85,8 +98,11 @@ public class TransactionPersonImpl implements ITransactionPersonService{
     }
 	@Override
 	public Flux<TransactionPerson> findByIdCustomerPersonAndProductName(String idCustomerPerson, String productName) {
-		// TODO Auto-generated method stub
-		return null;
+		return tprepo.findByIdCustomerPersonAndProductName(idCustomerPerson, productName);
+	}
+	@Override
+	public Flux<TransactionPerson> findByProductNameAndCreatedAtBetween(String productName, Date from, Date to) {
+		return tprepo.findByProductNameAndCreatedAtBetween(productName, from, to);
 	}
 
 }

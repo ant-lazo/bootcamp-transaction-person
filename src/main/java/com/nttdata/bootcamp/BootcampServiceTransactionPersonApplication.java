@@ -1,5 +1,8 @@
 package com.nttdata.bootcamp;
 
+import java.util.Date;
+import java.util.concurrent.TimeUnit;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -31,14 +34,16 @@ public class BootcampServiceTransactionPersonApplication implements CommandLineR
   @Override
   public void run(String... args) throws Exception {
   mongoTemplate.dropCollection("transaction_persons").subscribe();
+  
+  //Date today= new Date();
     
   Flux.just(TransactionPerson.builder()
     .idCustomerPerson("b1")
     .idProduct("120")
-    .productName("currentAccount")
+    .productName("SavingAccount")
     .typeTransaction("paid")
     .amount("13")
-    .createdAt("19-05-22")
+    .createdAt(new Date())
     .build()).flatMap(bs->{
        return terepo.save(bs);
   }).subscribe(s-> log.info("Se ingreso transactionPerson: "+s));
