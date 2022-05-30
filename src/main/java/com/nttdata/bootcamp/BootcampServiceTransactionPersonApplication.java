@@ -22,7 +22,7 @@ import reactor.core.publisher.Flux;
 public class BootcampServiceTransactionPersonApplication implements CommandLineRunner{
   
   @Autowired
-  ITransactionPersonRepo terepo;
+  ITransactionPersonRepo tprepo;
   
   @Autowired
   ReactiveMongoTemplate mongoTemplate;
@@ -45,7 +45,7 @@ public class BootcampServiceTransactionPersonApplication implements CommandLineR
     .amount("13")
     .createdAt(new Date())
     .build()).flatMap(bs->{
-       return terepo.save(bs);
+       return tprepo.save(bs);
   }).subscribe(s-> log.info("Se ingreso transactionPerson: "+s));
 }
 

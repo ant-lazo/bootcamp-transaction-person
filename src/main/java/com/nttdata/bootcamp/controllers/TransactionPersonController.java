@@ -7,6 +7,7 @@ import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cloud.client.circuitbreaker.CircuitBreakerFactory;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -36,6 +37,9 @@ import reactor.core.publisher.Mono;
 public class TransactionPersonController {
 	
 	@Autowired
+	private CircuitBreakerFactory cbFactory;
+	
+	@Autowired
 	private ITransactionPersonService tarepo;
 	
 	@Autowired
@@ -57,7 +61,6 @@ public class TransactionPersonController {
 		
 		transactionPerson.setCreatedAt(new Date());
 		
-		log.info("a TransactionPerson was created");
 		switch (transactionPerson.getProductName()) {
 			case Constants.CURRENTACCOUNT:
 				return tarepo.saveCurrentAccount(transactionPerson);
@@ -78,7 +81,21 @@ public class TransactionPersonController {
 	
 	@GetMapping("/findByIdCustomerPersonAndProductName/{idCustomerPerson}/{productName}")
 	public Flux<TransactionPerson> findByIdCustomerPersonAndProductName(@PathVariable String idCustomerPerson, @PathVariable String productName){
-		return tarepo.findByIdCustomerPersonAndProductName(idCustomerPerson, productName);
+		//return tarepo.findByIdCustomerPersonAndProductName(idCustomerPerson, productName);
+		return cbFactory.create("circuitBreaker")
+				.run(()-> tarepo.findByIdCustomerPersonAndProductName(idCustomerPerson, productName), 
+						e-> alternativeMethodFindByIdCustomerPersonAndProductName(idCustomerPerson, productName));
+	}
+	
+	public Flux<TransactionPerson> alternativeMethodFindByIdCustomerPersonAndProductName(String idCustomerPerson, String productName){
+		return Flux.just(
+				TransactionPerson.builder()
+			    .idCustomerPerson("xxxx")
+			    .idProduct("xxxx")
+			    .productName("xxxx")
+			    .typeTransaction("xxxx")
+			    .amount("xxxx").build()
+			    );
 	}
 	
 	@GetMapping("/findByProductNameAndCreatedAtBetween")

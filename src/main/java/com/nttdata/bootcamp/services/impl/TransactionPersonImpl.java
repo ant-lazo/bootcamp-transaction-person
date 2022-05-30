@@ -1,13 +1,14 @@
 package com.nttdata.bootcamp.services.impl;
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 import com.nttdata.bootcamp.exceptions.TypeTransactionException;
 import com.nttdata.bootcamp.utils.Constants;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import com.nttdata.bootcamp.models.TransactionPerson;
@@ -19,21 +20,24 @@ import reactor.core.publisher.Mono;
 
 @Slf4j
 @Service
+@RequiredArgsConstructor
 public class TransactionPersonImpl implements ITransactionPersonService{
-    @Autowired
-    ITransactionPersonRepo tprepo;
-    /*private WebClient customerServiceClient = WebClient.builder()
-              .baseUrl("http://localhost:8024")
-              .build();*/
+    
+    private final ITransactionPersonRepo tprepo;
+    
     @Autowired
     private WebClient.Builder webClientBuilder;
-    /*private Function<Mono<SavingAccount>, Mono<SavingAccount>>
-            updateSavingAccount = (objeto) -> customerServiceClient
+    
+    private Function<Mono<SavingAccount>, Mono<SavingAccount>>
+            FUpdateSavingAccount = (objeto) -> webClientBuilder
+            .baseUrl("http://service-product-savingaccount")
+            .build()
             .patch()
             .uri("/savingAccount/update")
             .body(objeto, SavingAccount.class)
             .retrieve()
-            .bodyToMono(SavingAccount.class);*/
+            .bodyToMono(SavingAccount.class);
+    
     @Override
     public Flux<TransactionPerson> findAll() {
         return tprepo.findAll();
@@ -76,19 +80,11 @@ public class TransactionPersonImpl implements ITransactionPersonService{
                     }
                     return Mono.just(p);
                 });
-        
-            Mono<SavingAccount> updateSavingAccount = webClientBuilder
-                    .baseUrl("http://service-product-savingaccount")
-                    .build()
-                    .patch()
-                    .uri("/savingAccount/update")
-                    .accept(MediaType.APPLICATION_JSON)
-                    .body(savingAccount, SavingAccount.class)
-                    .retrieve()
-                    .bodyToMono(SavingAccount.class);
             
-                
+        Mono<SavingAccount> updateSavingAccount = FUpdateSavingAccount.apply(savingAccount);
+       
         return updateSavingAccount.flatMap(p->{
+    		log.info("a TransactionPerson was created");
             return tprepo.save(transactionPerson);
         });
     }
@@ -97,7 +93,10 @@ public class TransactionPersonImpl implements ITransactionPersonService{
         return tprepo.delete(transactionPerson);
     }
 	@Override
-	public Flux<TransactionPerson> findByIdCustomerPersonAndProductName(String idCustomerPerson, String productName) {
+	public Flux<TransactionPerson> findByIdCustomerPersonAndProductName(String idCustomerPerson, String productName){
+		if(idCustomerPerson.equals("xxxx")&&productName.equals("xxxx")) {
+			throw new IllegalStateException("illegal product name TransactionPerson");
+		}
 		return tprepo.findByIdCustomerPersonAndProductName(idCustomerPerson, productName);
 	}
 	@Override
