@@ -19,6 +19,7 @@ public class SavingAccount {
 	private String accountingBalance;
 	private String maintenance;
 	private String movementLimit;
+	private String profile;
 	
 	public void withdrawal(BigDecimal amount) {
 		BigDecimal accBigDec = new BigDecimal(this.accountingBalance);

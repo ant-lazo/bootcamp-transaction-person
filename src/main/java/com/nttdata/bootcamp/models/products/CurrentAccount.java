@@ -22,6 +22,7 @@ public class CurrentAccount {
 	private String typeCustomer;
 	private String accountingBalance;
 	private String maintenance;
+	private String profile;
 	
 	public void withdrawal(BigDecimal amount) {
 		BigDecimal accBigDec = new BigDecimal(this.accountingBalance);

@@ -106,7 +106,7 @@ public class TransactionPersonController {
 	    
 	    Calendar c = Calendar.getInstance();
         c.setTime(from);
-        c.add(Calendar.DATE, 1);
+        c.add(Calendar.DATE, -1);
         from = c.getTime();
         
         Calendar d = Calendar.getInstance();

@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import com.nttdata.bootcamp.models.TransactionPerson;
+import com.nttdata.bootcamp.models.products.PersonalCredit;
 import com.nttdata.bootcamp.models.products.SavingAccount;
 import com.nttdata.bootcamp.repositories.ITransactionPersonRepo;
 import com.nttdata.bootcamp.services.ITransactionPersonService;
@@ -37,6 +38,16 @@ public class TransactionPersonImpl implements ITransactionPersonService{
             .body(objeto, SavingAccount.class)
             .retrieve()
             .bodyToMono(SavingAccount.class);
+            
+    private Function<Mono<PersonalCredit>, Mono<PersonalCredit>>
+            FUpdatePersonalCredit = (objeto) -> webClientBuilder
+            .baseUrl("http://service-product-personalcredit")
+            .build()
+            .patch()
+            .uri("/personalCredit/update")
+            .body(objeto, PersonalCredit.class)
+            .retrieve()
+            .bodyToMono(PersonalCredit.class);
     
     @Override
     public Flux<TransactionPerson> findAll() {
@@ -56,7 +67,33 @@ public class TransactionPersonImpl implements ITransactionPersonService{
 	}
 	@Override
 	public Mono<TransactionPerson> savePersonalCredit(TransactionPerson transactionPerson) {
-		return null;
+		Mono<PersonalCredit> personalCredit = webClientBuilder
+                .baseUrl("http://service-product-personalcredit")
+                .build()
+                .get()
+                .uri("/personalCredit/findById/"+transactionPerson.getIdProduct())
+                .retrieve()
+                .bodyToMono(PersonalCredit.class)
+                .flatMap(p->{
+                    switch (transactionPerson.getTypeTransaction()){
+                        case Constants.CONSUMPTION:
+                            p.consumption(new BigDecimal(transactionPerson.getAmount()));
+                            break;
+                        case Constants.PAYMENT:
+                            p.payment(new BigDecimal(transactionPerson.getAmount()));
+                            break;
+                        default:
+                            return Mono.error( new TypeTransactionException("The type transaction is incorret"));
+                    }
+                    return Mono.just(p);
+                });
+		
+		Mono<PersonalCredit> updatePersonalCredit = FUpdatePersonalCredit.apply(personalCredit);
+	       
+        return updatePersonalCredit.flatMap(p->{
+    		log.info("a TransactionPerson was created");
+            return tprepo.save(transactionPerson);
+        });
 	}
     @Override
     public Mono<TransactionPerson> saveSavingAccount(TransactionPerson transactionPerson){
