@@ -21,11 +21,11 @@ import reactor.core.publisher.Flux;
 @SpringBootApplication
 public class BootcampServiceTransactionPersonApplication implements CommandLineRunner{
   
-  @Autowired
+  /*@Autowired
   ITransactionPersonRepo tprepo;
   
   @Autowired
-  ReactiveMongoTemplate mongoTemplate;
+  ReactiveMongoTemplate mongoTemplate;*/
 
   public static void main(String[] args) {
     SpringApplication.run(BootcampServiceTransactionPersonApplication.class, args);
@@ -33,11 +33,11 @@ public class BootcampServiceTransactionPersonApplication implements CommandLineR
 
   @Override
   public void run(String... args) throws Exception {
-  mongoTemplate.dropCollection("transaction_persons").subscribe();
+  //mongoTemplate.dropCollection("transaction_persons").subscribe();
   
   //Date today= new Date();
     
-  Flux.just(TransactionPerson.builder()
+  /*Flux.just(TransactionPerson.builder()
     .idCustomerPerson("b1")
     .idProduct("120")
     .productName("SavingAccount")
@@ -46,7 +46,7 @@ public class BootcampServiceTransactionPersonApplication implements CommandLineR
     .createdAt(new Date())
     .build()).flatMap(bs->{
        return tprepo.save(bs);
-  }).subscribe(s-> log.info("Se ingreso transactionPerson: "+s));
+  }).subscribe(s-> log.info("Se ingreso transactionPerson: "+s));*/
 }
 
 }
